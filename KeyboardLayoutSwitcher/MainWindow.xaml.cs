@@ -8,6 +8,7 @@ namespace KeyboardLayoutSwitcher
 {
     public partial class MainWindow : Window
     {
+        private WinEventHook winEventHook;
         private readonly LayoutSwitcher layoutSwitcher;
         public ObservableCollection<AppLayoutItem> AppLayouts { get; set; }
 
@@ -15,12 +16,20 @@ namespace KeyboardLayoutSwitcher
         {
             InitializeComponent();
             layoutSwitcher = new LayoutSwitcher();
+            winEventHook = new WinEventHook();
+            winEventHook.ForegroundWindowChanged += OnForegroundWindowChanged;
+
             AppLayouts = new ObservableCollection<AppLayoutItem>(
                 layoutSwitcher.AppLayouts.Select(kvp => new AppLayoutItem { Application = kvp.Key, Layout = kvp.Value })
             );
             AppsGrid.ItemsSource = AppLayouts;
 
             RefreshRunningApps();
+        }
+
+        private void OnForegroundWindowChanged(string exeName)
+        {
+            layoutSwitcher.CheckAndSwitch(exeName);
         }
 
         private void RefreshRunningApps()
