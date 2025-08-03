@@ -2,7 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-namespace KeyboardLayoutSwitcher
+namespace KLS
 {
     public class WinEventHook : IDisposable
     {
@@ -41,6 +41,7 @@ namespace KeyboardLayoutSwitcher
             if (hwnd != IntPtr.Zero)
             {
                 GetWindowThreadProcessId(hwnd, out uint pid);
+                if (pid == 0) return; // Ignore les fenêtres système
                 try
                 {
                     var proc = Process.GetProcessById((int)pid);
